@@ -105,3 +105,8 @@ description = "Xquik skill for X/Twitter data, monitoring, MCP, and API workflow
 url = "https://github.com/cursor/plugins"
 ref = "main"
 description = "Cursor's official skills and plugins repository"
+
+[[repo]]
+url = "https://github.com/yylo-dev/yylo-skills"
+ref = "main"
+description = "YYLO agent skills — Ledger tasks, wiki, workflows, artifacts, and benchmarks for coding agents"
