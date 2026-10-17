@@ -1,0 +1,57 @@
+name: Preview
+
+on:
+  workflow_call:
+  pull_request:
+    branches: [main]
+    types: [closed]
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    # Called from CI after a successful build; never for forks
+    if: >-
+      github.event_name == 'pull_request' &&
+      github.event.action != 'closed' &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-26.04
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v7
+      - name: Download site artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: site
+          path: site/
+      - name: Deploy preview
+        uses: rossjrw/pr-preview-action@v1
+        with:
+          action: deploy
+          source-dir: ./site
+          preview-branch: gh-pages
+          umbrella-dir: pr-preview
+          comment: true
+
+  cleanup:
+    # Runs on PR close regardless of CI result; skipped for forks
+    if: >-
+      github.event_name == 'pull_request' &&
+      github.event.action == 'closed' &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-26.04
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v7
+      - name: Remove preview
+        uses: rossjrw/pr-preview-action@v1
+        with:
+          action: remove
+          preview-branch: gh-pages
+          umbrella-dir: pr-preview
+          comment: true
